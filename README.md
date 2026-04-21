@@ -65,3 +65,48 @@ Recombination rates were compared across these three diets for each DGRP strain.
 - Possibly interval-specific recombination calculations as helper functions.
 - RNA-seq import / DEG count summarisation scripts.
 ---
+
+## 3. Positives points of the Github
+### Separate Analysis and Plotting Scripts
+Having `Caloric_Density_Analysis.R` and `Plots_Manuscript.R` as two distinct R scripts is a genuine best practice. It separates statistical inference from figure generation, so plots can be adjusted without re-running models.
+
+### Three-Folder Data Hierarchy
+`rawdata/` → `output/` → `images/` creates a clear, reproducible data flow that someone cloning the repo can immediately navigate.
+
+### DOI + Publication Release
+Minting a Zenodo snapshot (`10.5281/zenodo.18090408`) at the time of publication is best practice for scientific reproducibility and citability.
+
+### MIT License and Full README Abstract
+The README is immediately useful to anyone finding the repo through a literature search.
+
+---
+
+## 4. Areas for Improvement (Code Organisation)
+
+### 4.1 Driver Scripts at Root Instead of Inside `scripts/`
+`Caloric_Density_Analysis.R` and `Plots_Manuscript.R` live at the repo root alongside `LICENSE` and `README.md`. They should be inside `scripts/` with numeric prefixes:
+
+```
+scripts/
+├── 01_caloric_density_analysis.R
+├── 02_plots_manuscript.R
+└── helpers/
+    └── plot_theme.R
+```
+
+### 4.2 No `run_all.R` Entry Point
+There is no single script to reproduce the full analysis in order. Add a root-level `run_all.R`:
+
+```r
+source("scripts/01_caloric_density_analysis.R")
+source("scripts/02_plots_manuscript.R")
+```
+
+### 4.3 No Dependency Pinning (`renv`)
+R package versions are not locked. Add `renv::snapshot()` to generate a `renv.lock` file, or at minimum include a `session_info.txt`. This is especially important for `lme4` and `ggplot2`, which have had API changes over time.
+
+### 4.4 No Inline Documentation of Modelling Decisions
+The choice of random effects structure, the family used in `glmer`, and the post-hoc correction method should be documented with inline comments explaining *why*, not just *what*.
+
+---
+
