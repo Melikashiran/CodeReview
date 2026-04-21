@@ -11,8 +11,8 @@ The study used **two inbred lines from the Drosophila Genetic Reference Panel (D
 
 | Stock | Starvation Sensitivity | Recombination Plasticity Found? |
 |---|---|---|
-| **DGRP_42** | High (more sensitive to starvation stress) | ✅ Yes — significant differences between 0.5× and 2× diet |
-| **DGRP_217** | Low (more resistant) | ❌ No significant plasticity |
+| **DGRP_42** | High (more sensitive to starvation stress) | Yes — significant differences between 0.5× and 2× diet |
+| **DGRP_217** | Low (more resistant) | No significant plasticity |
 
 These were chosen deliberately to contrast genotypes with known differences in stress response, allowing the study to investigate whether genetic background modulates dietary effects on recombination.
 
@@ -41,3 +41,27 @@ Females were raised on **three caloric density diets** before and during mating:
 
 Recombination rates were compared across these three diets for each DGRP strain.
 
+---
+
+## 2. What the Scripts Do 
+### `Caloric_Density_Analysis.R` *(main analysis driver)*
+
+- Loads raw F2 phenotypic class counts from `rawdata/` — these are the scored offspring from each dietary treatment × DGRP strain combination.
+- Calculates **crossover frequency per interval** from the 4-marker X chromosome system (3 intervals: *y–cv*, *cv–v*, *v–f*).
+- Runs **mixed-model statistics** (`glmer` from `lme4`) to test for effects of diet and genetic background on recombination rate, with vial as a random effect.
+- Performs **post-hoc pairwise comparisons** (0.5× vs 1×, 1× vs 2×, 0.5× vs 2×) — the significant result was 0.5× vs 2× in DGRP_42 only.
+- Analyses physiological traits: body mass, oocyte count, testis length, TUNEL assay DNA damage scores.
+- Outputs summary tables to `output/`.
+
+### `Plots_Manuscript.R` *(publication figure generator)*
+
+- Reads the processed results from `output/` or directly from `rawdata/`.
+- Generates all manuscript figures: recombination rate bar/dot plots per diet × strain, physiology boxplots, TUNEL visualisations, DEG summary.
+- Exports figures to `images/` in publication-ready format (PDF or PNG).
+
+### `scripts/` folder *(helper scripts)*
+
+- Data wrangling and cleaning of raw phenotypic count files.
+- Possibly interval-specific recombination calculations as helper functions.
+- RNA-seq import / DEG count summarisation scripts.
+---
