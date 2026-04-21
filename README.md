@@ -196,5 +196,6 @@ Aggregates Kosambi-corrected means by `Treatment × PaternalStock` and computes 
 I used this dataset for some of my own downstream analyses, but I encountered a key structural issue: fertility/fecundity was recorded at the MaternalVial level, while recombination was measured at the individual vial ID level. These are not the same unit of observation (a single maternal vial can contain multiple scored vials across different brooding periods).
 Because of this mismatch, when I wanted to combine recombination and fecundity data in the same analysis, I had to fork the original dataset and recalculate fecundity at the vial level to match the recombination measurement unit. This aggregation step is not present in the original script, which means anyone else trying to do the same combined analysis would hit the same problem without realising it.
 This is worth documenting as a limitation of the original data structure.
+
 ---
 *Based on actual script code. April 2026.*
