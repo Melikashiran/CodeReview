@@ -141,3 +141,55 @@ The Novak et al. results — specifically that DGRP_42 shows a significant 0.5×
 My chapter provides the statistical framework (and the software/model) to test and correct for exactly this. Applying Cx(Co)m viability-corrected approach to a dataset like Novak et al. would be a natural extension and a methodological improvement on the traditional approach the field has relied on.
 
 ---
+# Code Review: Script 05 — Recombination Rate Analysis
+
+---
+
+## What the Script Does
+
+**1. Kosambi Map Function**
+Converts raw recombination fractions to centiMorgans (cM) to correct for double crossovers that would otherwise make intervals look shorter than they are. Applied per-interval before summing to a total map length.
+
+**2. Crossover Count Aggregation**
+Takes the raw haplotype-scored data (`by_vialday`) and counts non-crossover (NCO), single (SCO), double (DCO), and triple (TCO) crossover individuals per vial-day. Computes total crossover *events* as `sco + 2×dco + 3×tco`, then calculates a raw recombination rate per vial. Rows with missing values are dropped via `na.omit()`.
+
+**3. Per-Interval Validation**
+Breaks crossovers into the 3 X-chromosome intervals (y–cv, cv–v, v–f) and computes dataset-wide observed recombination fractions, then compares them to expected genetic distances (13.7, 19.3, 23.7 cM) as a sanity check. Applies Kosambi correction to observed values and stores the comparison in `recomb_intervals`. Sources `scripts/05b.COI.R` to calculate crossover interference (COI).
+
+**4. Data Aggregation (Raw then Kosambi-corrected)**
+Collapses per-day rows to the vial level using `summaryBy()`, summing all crossover counts within each `MaternalVial × vial_letter × PaternalStock × Treatment` combination. Filters out vials with fewer than 5 scored males. Does this twice — once without correction (for comparison) and once applying Kosambi to each interval before summing — producing the corrected `recomb_rate` object used for all downstream stats.
+
+**5. Full-Interval GLMM**
+Fits a binomial GLMM (`glmer`) with crossover successes/failures as the response, `MaternalVial` as a random effect, and `Treatment × PaternalStock × vial_letter` as the three-way fixed-effects interaction. Uses `optimx/nlminb` optimizer. Tests overall significance with `Anova()` (Type II chi-square) and saves results to `output/`.
+
+**6. Post-Hoc Contrasts and Odds Ratio Plots**
+Runs pairwise `emmeans` contrasts between diet treatments (0.5x vs 1x, 0.5x vs 2x, 1x vs 2x) separately within each `PaternalStock × vial_letter` combination. Converts log-odds estimates to odds ratios via `exp()`. Produces one odds ratio line plot per strain (DGRP_42 and DGRP_217) with significance stars, saved as PDFs. This block is repeated for the full interval and for each of the 3 individual intervals (8 plots total).
+
+**7. Per-Interval GLMMs (y–cv, cv–v, v–f)**
+Repeats the same GLMM and post-hoc structure from Block 5–6 three more times, once per marker interval, to test whether the diet effect is chromosome-wide or concentrated in a specific region. Each model saves an ANOVA table and post-hoc CSV to `output/`.
+
+**8. Paper Summary Table and Manual Differences**
+Aggregates Kosambi-corrected means by `Treatment × PaternalStock` and computes the absolute cM difference between diet pairs for each strain. Reports these as hardcoded arithmetic (e.g., `55.23938 - 51.92768`) for inclusion in the manuscript table.
+
+---
+
+## ✅ What Is Done Well
+
+- Correct random effect structure (`1 | MaternalVial`) accounts for non-independence of offspring from the same F1 mother
+- Kosambi correction applied per-interval before summing — biologically correct order
+- Both strains analysed separately, allowing the genotype × diet interaction to emerge
+- Results consistently written to `output/` as CSVs for reproducibility
+- COI analysis factored into its own sourced script (`05b.COI.R`)
+
+---
+
+## ⚠️ What Could Be Better
+
+| Issue | Problem |
+|-------|---------|
+| **8× copy-pasted odds ratio plot** | The `ggplot` odds ratio block is copy-pasted for every interval × strain combination. Should be a single reusable function |
+| **Hardcoded subtracted values** | Numbers like `55.23938 - 51.92768` are manually typed results — if data changes they go silently wrong |
+| **`_new` suffix in output filename** | `recomb-stats_anova-ycv_new.csv` is a development artifact that was never cleaned up |
+
+---
+*Based on actual script code. April 2026.*
