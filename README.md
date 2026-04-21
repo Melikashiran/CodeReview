@@ -83,7 +83,7 @@ The README is immediately useful to anyone finding the repo through a literature
 
 ## 4. Areas for Improvement (Code Organisation)
 
-### 4.1 Driver Scripts at Root Instead of Inside `scripts/`
+### Driver Scripts at Root Instead of Inside `scripts/`
 `Caloric_Density_Analysis.R` and `Plots_Manuscript.R` live at the repo root alongside `LICENSE` and `README.md`. They should be inside `scripts/` with numeric prefixes:
 
 ```
@@ -94,7 +94,7 @@ scripts/
     └── plot_theme.R
 ```
 
-### 4.2 No `run_all.R` Entry Point
+### No `run_all.R` Entry Point
 There is no single script to reproduce the full analysis in order. Add a root-level `run_all.R`:
 
 ```r
@@ -102,10 +102,10 @@ source("scripts/01_caloric_density_analysis.R")
 source("scripts/02_plots_manuscript.R")
 ```
 
-### 4.3 No Dependency Pinning (`renv`)
+### No Dependency Pinning (`renv`)
 R package versions are not locked. Add `renv::snapshot()` to generate a `renv.lock` file, or at minimum include a `session_info.txt`. This is especially important for `lme4` and `ggplot2`, which have had API changes over time.
 
-### 4.4 No Inline Documentation of Modelling Decisions
+### No Inline Documentation of Modelling Decisions
 The choice of random effects structure, the family used in `glmer`, and the post-hoc correction method should be documented with inline comments explaining *why*, not just *what*.
 
 ---
