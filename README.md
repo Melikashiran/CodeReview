@@ -109,4 +109,41 @@ R package versions are not locked. Add `renv::snapshot()` to generate a `renv.lo
 The choice of random effects structure, the family used in `glmer`, and the post-hoc correction method should be documented with inline comments explaining *why*, not just *what*.
 
 ---
+## 5. How (Koury et al. 2026) Differs (A Better Way to Measure Recombination)
 
+Your first chapter directly addresses a fundamental flaw in the approach used in Novak et al. and in all traditional *Drosophila* recombination studies that use phenotypic markers. Here is how the two approaches compare:
+
+---
+
+### The Problem with the Traditional 4-Marker Method (Novak et al.)
+The classic testcross counts F2 adults sorted into phenotypic classes and treats those counts as direct readouts of crossover frequency. But this introduces a systematic bias: **not all F2 zygotes survive to be scored**.
+
+> "Classic recombination experiments designed to test genetic and environmental treatments do not directly measure crossing-over, instead rates and distribution of meiotic events in F1 meiocytes is inferred from genetic markers in F2 adults. In *Drosophila melanogaster* females this procedure introduces a substantial 'missing data problem' because 75% of meiotic chromatids segregate to polar body nuclei and another **11% are transmitted to inviable F2 zygotes which cannot be scored** for recombination."
+
+This means that if certain haplotypes are less viable (which the markers themselves can cause), the phenotypic class counts are **distorted** — and what looks like a change in recombination rate could partly be a change in **differential survival** of recombinant vs non-recombinant offspring.
+
+---
+
+### What My Chapter 1 Does Differently — 7 Markers + Viability Correction
+
+My chapter extends the **Cx(Co)m model** (a probabilistic model of crossover patterning) to explicitly account for experimental mortality. Key differences:
+
+| Feature | Novak et al. (4 markers, no viability correction) | Koury et al. (7 markers, viability-corrected) |
+|---|---|---|
+| **Markers** | 4 X-linked visible markers (y, cv, v, f) | 6 X-linked visible markers + survival measured |
+| **Intervals scored** | 3 intervals on the X | full X chromosome map |
+| **Survival** | Not directly measured or modelled | Explicitly measured — egg-to-adult viability assay |
+| **Statistical model** | Standard GLM/GLMM on crossover counts | Extended Cx(Co)m model with viability parameters |
+| **What is inferred** | Crossover frequency (potentially confounded by viability) | Crossover frequency **corrected for differential marker viability** |
+
+The key conceptual advance in my work is that **differential mortality should be the starting assumption, not something to assume away**. This reframes how to interpret any experiment that uses visible markers in *Drosophila* — including Novak et al.
+
+---
+
+### Why This Matters for Interpreting Novak et al.
+
+The Novak et al. results — specifically that DGRP_42 shows a significant 0.5× vs 2× difference in crossover frequency — are interesting biologically, but they were obtained without checking whether differential marker viability varied between dietary treatments. If, say, the low-calorie diet differentially reduces survival of certain phenotypic classes, then the apparent increase in crossover frequency at 0.5× could be partly or wholly a viability artefact rather than a true change in the meiotic crossover rate.
+
+My chapter provides the statistical framework (and the software/model) to test and correct for exactly this. Applying Cx(Co)m viability-corrected approach to a dataset like Novak et al. would be a natural extension and a methodological improvement on the traditional approach the field has relied on.
+
+---
