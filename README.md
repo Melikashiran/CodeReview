@@ -109,12 +109,6 @@ R package versions are not locked. Add `renv::snapshot()` to generate a `renv.lo
 The choice of random effects structure, the family used in `glmer`, and the post-hoc correction method should be documented with inline comments explaining *why*, not just *what*.
 
 ---
-## 5. How (Koury et al. 2026) Differs (A Better Way to Measure Recombination)
-
-Your first chapter directly addresses a fundamental flaw in the approach used in Novak et al. and in all traditional *Drosophila* recombination studies that use phenotypic markers. Here is how the two approaches compare:
-
----
-
 ### The Problem with the Traditional 4-Marker Method (Novak et al.)
 The classic testcross counts F2 adults sorted into phenotypic classes and treats those counts as direct readouts of crossover frequency. But this introduces a systematic bias: **not all F2 zygotes survive to be scored**.
 
